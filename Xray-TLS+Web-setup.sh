@@ -25,7 +25,7 @@ nginx_config="${nginx_prefix}/conf.d/xray.conf"
 nginx_service="/etc/systemd/system/nginx.service"
 nginx_is_installed=""
 
-php_version="php-7.4.30"
+php_version="php-7.4.32"
 php_prefix="/usr/local/php"
 php_service="/etc/systemd/system/php-fpm.service"
 php_is_installed=""
@@ -36,7 +36,7 @@ cloudreve_prefix="/usr/local/cloudreve"
 cloudreve_service="/etc/systemd/system/cloudreve.service"
 cloudreve_is_installed=""
 
-nextcloud_url="https://download.nextcloud.com/server/releases/nextcloud-24.0.0.zip"
+nextcloud_url="https://download.nextcloud.com/server/releases/nextcloud-25.0.0.zip"
 
 xray_config="/usr/local/etc/xray/config.json"
 xray_is_installed=""
@@ -2021,13 +2021,13 @@ instal_php_imagick()
 }
 instal_php_apcu()
 {
-    if ! wget http://pecl.php.net/get/apcu-5.1.21.tgz; then
+    if ! wget http://pecl.php.net/get/apcu-5.1.22.tgz; then
         yellow "获取php-apcu源码失败"
         yellow "按回车键继续或者按Ctrl+c终止"
         read -s
     fi
-    tar -zvxf apcu-5.1.21.tgz
-    cd apcu-5.1.21
+    tar -zvxf apcu-5.1.22.tgz
+    cd apcu-5.1.22
     ${php_prefix}/bin/phpize
     ./configure --with-php-config=${php_prefix}/bin/php-config
     swap_on 380
@@ -2044,8 +2044,8 @@ instal_php_apcu()
     fi
 #    mv apcu.so "$(${php_prefix}/bin/php -i | grep "^extension_dir" | awk '{print $3}')"
     cd ..
-    rm -f apcu-5.1.21.tgz
-    rm -rf apcu-5.1.21
+    rm -f apcu-5.1.22.tgz
+    rm -rf apcu-5.1.22
 }
 instal_php_redis()
 {
