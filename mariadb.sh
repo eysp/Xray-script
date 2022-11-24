@@ -92,7 +92,7 @@ while [[ ! "$choice" =~ ^(0|[1-4][0-4]*)$ ]] || ((choice>5))
         mysql_password=""
         while [ -z "$mysql_password" ]
         do
-        read -p "请输入mysql普通用户密码" mysql_password
+        read -p "请输入mysql普通用户密码:" mysql_password
         done
 	! ask_if "数据库/用户\"$mysql_user\"密码\"$mysql_password\"确定吗？(y/n)" && return 0
 	    create_mysql
@@ -122,8 +122,9 @@ red "安装和配置mariadb..."
 dnf module install mariadb -y || apt update && apt install mariadb-server -y
 systemctl enable mariadb
 systemctl start mariadb
-fi
+else
 yellow "检测到mysql已安装，跳过安装"
+fi
 } 
 
 
