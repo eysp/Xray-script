@@ -126,7 +126,7 @@ red "安装和配置mariadb..."
     elif [[ `command -v yum` ]];then
         PACKAGE_MANAGER='yum'
     else
-        colorEcho $RED "Not support OS!"
+        red "Not support OS!"
         exit 1
     fi
    if [[ ${PACKAGE_MANAGER} == 'dnf' ]];then
