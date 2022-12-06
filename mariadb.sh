@@ -130,12 +130,12 @@ red "安装和配置mariadb..."
         exit 1
     fi
    if [[ ${PACKAGE_MANAGER} == 'dnf' ]];then
-      ${PACKAGE_MANAGER} module install mariadb -y 
+      ${PACKAGE_MANAGER} module install mariadb -y | ${PACKAGE_MANAGER} install expect -y
     elif ${PACKAGE_MANAGER} == 'yum' ]];then
-      ${PACKAGE_MANAGER} install mariadb -y
+      ${PACKAGE_MANAGER} install mariadb expect -y
     else
       ${PACKAGE_MANAGER} update
-      ${PACKAGE_MANAGER} install mariadb-server -y
+      ${PACKAGE_MANAGER} install mariadb-server expect -y
    fi
 systemctl daemon-reload
 systemctl enable mariadb
@@ -190,5 +190,54 @@ red "删除数据库..."
 mysql -e "DROP DATABASE IF EXISTS $database_name"
 mysql -e "DROP USER IF EXISTS '$database_name'@'localhost'"
 mysql -e "FLUSH PRIVILEGES"
+}
+config_mysql() {
+    cat > '/etc/mysql/my.cnf' << EOF
+# MariaDB-specific config file.
+# Read by /etc/mysql/my.cnf
+[client]
+default-character-set = utf8mb4 
+[mysqld]
+max_allowed_packet = 16M
+group_concat_max_len = 8192
+max_connections = 2000
+character-set-server  = utf8mb4 
+collation-server      = utf8mb4_unicode_ci
+character_set_server   = utf8mb4 
+collation_server       = utf8mb4_unicode_ci
+# Import all .cnf files from configuration directory
+!includedir /etc/mysql/mariadb.conf.d/
+bind-address=127.0.0.1
+innodb_read_only_compressed=OFF
+innodb_flush_log_at_trx_commit = 2
+[mariadb]
+userstat = 1
+tls_version = TLSv1.2,TLSv1.3
+log_error=/var/log/mysql/mariadb.err
+# ssl_cert = /etc/certs/${domain}_ecc/fullchain.cer
+# ssl_key = /etc/certs/${domain}_ecc/${domain}.key
+EOF
+}
+mysql_secure() {
+SECURE_MYSQL=$(expect -c "
+set timeout 10
+spawn mysql_secure_installation
+expect \"Enter current password for root (enter for none):\"
+send \"\r\"
+expect \"Switch to unix_socket authentication\"
+send \"n\r\"
+expect \"Change the root password?\"
+send \"n\r\"
+expect \"Remove anonymous users?\"
+send \"y\r\"
+expect \"Disallow root login remotely?\"
+send \"y\r\"
+expect \"Remove test database and access to it?\"
+send \"y\r\"
+expect \"Reload privilege tables now?\"
+send \"y\r\"
+expect eof
+")
+echo "$SECURE_MYSQL"
 }
 start_menu
